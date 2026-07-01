@@ -1,0 +1,34 @@
+name,org_type,country_scope,homepage_url,notes
+ONDC (Open Network for Digital Commerce),gov_india,india,https://ondc.org,"Section 8 non-profit, govt-backed; extends Beckn Protocol for commerce/mobility/logistics/finance."
+eGov Foundation / DIGIT,foundation_india,india,https://egov.org.in/digit,Open-source platform for local governance; certified Digital Public Good.
+MOSIP (Modular Open Source Identity Platform),open_source_community,global_with_india_deployment,https://mosip.io,Originated at IIIT-Bangalore; Infosys TechForGood contributes modules. Adopted 10+ countries.
+Infosys Springboard,private_india,global,https://infosysspringboard.org,"Open-source digital skilling platform, Infosys Foundation."
+WHO (World Health Organization),international_gov_or_un,global,https://who.int,
+World Bank,international_gov_or_un,global,https://data.worldbank.org,
+UNICEF / Nyaruka (RapidPro),international_gov_or_un,global_with_india_deployment,https://github.com/rapidpro/rapidpro,Used in several India state govt programs.
+UN OCHA (Humanitarian Data Exchange),international_gov_or_un,global,https://data.humdata.org,
+OpenSPP community,open_source_community,global,https://openspp.org,Social protection / benefit delivery platform.
+Medic (Community Health Toolkit),international_ngo_or_foundation,global,https://communityhealthtoolkit.org,Offline-first frontline health worker platform.
+Mojaloop Foundation,international_ngo_or_foundation,global,https://mojaloop.io,Gates Foundation-backed open payment switch reference implementation.
+MeitY — API Setu,gov_india,india,https://apisetu.gov.in,Govt of India open API aggregator/directory.
+ISRO/NRSC — Bhuvan,gov_india,india,https://bhuvan-app1.nrsc.gov.in/api,"India's own satellite/geospatial data platform. Functional, sparsely documented."
+CDPG — India Urban Data Exchange (IUDX),gov_india,india,https://iudx.org.in,"MeitY/Ministry of Housing & Urban Affairs backed; open source, IISc Bangalore CDPG."
+Bhashini (National Language Technology Mission),gov_india,india,https://bhashini.gov.in,Open-source ASR/MT/TTS across Indian languages.
+data.gov.in (Open Government Data Platform India),gov_india,india,https://data.gov.in,MeitY open-data catalogue; per-dataset freshness varies widely.
+Sunbird,open_source_community,global_with_india_deployment,https://sunbird.org,India-origin education infrastructure stack; underlies DIKSHA.
+OpenCRVS community,open_source_community,global,https://opencrvs.org,Open-source civil registration (births/deaths).
+Apache Fineract / Mifos Initiative,open_source_community,global,https://fineract.apache.org,Open-source core banking for microfinance/financial inclusion.
+ODK (Open Data Kit),open_source_community,global,https://getodk.org,Offline-first mobile data collection framework.
+KoboToolbox,open_source_community,global,https://kobotoolbox.org,Form-based data collection for humanitarian/research use.
+OpenMRS / Bahmni,open_source_community,global_with_india_deployment,https://openmrs.org,Open-source EMR; Bahmni is India-origin (Thoughtworks + collaborators).
+Primero / CPIMS+ (UNICEF-backed),international_ngo_or_foundation,global,https://primero.org,Open-source child-protection case management.
+OpenClimate,open_source_community,global,https://openclimate.network,Open climate/emissions-accounting tracking platform.
+SEPAL (FAO),international_gov_or_un,global,https://sepal.io,Cloud platform for satellite land-monitoring.
+"X-Road (Estonia-origin, reused elsewhere)",international_gov_or_un,global,https://x-road.global,"Secure gov-to-gov data exchange layer; architectural reference, not India-deployed."
+TCS (Public Services India / DigiGOV),private_india,india,https://tcs.com,"System integrator for govt mission-mode programs (GeM, passports, pensions). Not a public-good API itself."
+Wipro Foundation,foundation_india,india,https://wiprofoundation.org,CSR programs; not a software/API platform.
+UIDAI (Aadhaar),gov_india,india,https://uidai.gov.in,"Statutory authority issuing India's biometric digital identity (~144 crore numbers issued). Access is tiered and permissioned, not open — see individual capability rows."
+NPCI (UPI),gov_india,india,https://www.npci.org.in,"Section 8 non-profit operating India's real-time payments switch. ~20 billion monthly transactions as of early 2026. API access is via licensed PSP/bank, not direct public integration."
+MeitY (DigiLocker),gov_india,india,https://digilocker.gov.in,Cloud document wallet + verified-issuer document exchange. Requester API needs MeitY approval; citizen-facing app usable directly.
+Sahamati (Account Aggregator ecosystem),gov_india,india,https://sahamati.org.in,Industry alliance coordinating the RBI-regulated Account Aggregator (AA) consent framework for financial-data sharing. Technical specs maintained by ReBIT. Direct AA data access requires FIU status (regulated entity) or a partnership with one.
+National Health Authority (ABDM),gov_india,india,https://abdm.gov.in,"Ayushman Bharat Digital Mission — health-records layer of India Stack: health ID, facility/practitioner registries, consent-based health record exchange."
