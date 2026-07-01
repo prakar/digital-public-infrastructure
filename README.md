@@ -1,8 +1,7 @@
-# India Public Digital Infrastructure — Capability Ontology
+# Digital Public Infrastructure
 
-A dictionary mapping public-good tech in/for India — government, private-sector,
-foundation, and international — to **real-world capabilities**, in plain
-language, independent of implementation detail.
+A dictionary of public-good tech (government, private-sector, foundation, and international) mapped to **real-world capabilities** in everyday language rather than implementation detail, to enable better discovery by entrepreneurs, NGOs, and developers. Read-only view, rendered client-side from dictionary.sqlite via sql.js.
+
 
 This repo is a **dictionary, not an application**. That's a deliberate,
 permanent scope decision — see "How downstream apps should consume this"
@@ -23,7 +22,7 @@ below before adding anything beyond data.
   `data/*.csv` or `schema.sql`.
 - `dictionary.sqlite` — the built artifact. Committed to the repo so it's
   fetchable by URL without a build step on the consuming end.
-- `web/index.html` — a static, read-only viewer. Loads `dictionary.sqlite`
+- `docs/index.html` — a static, read-only viewer. Loads `dictionary.sqlite`
   client-side via [sql.js](https://sql.js.org) (WASM SQLite compiled to
   JS, loaded from cdnjs) and renders every capability grouped into tabs by
   domain. No backend.
@@ -92,12 +91,12 @@ reconsider — not before.
 
 ## Viewing locally
 
-`web/index.html` fetches `dictionary.sqlite` via a relative path, so it
+`docs/index.html` fetches `dictionary.sqlite` via a relative path, so it
 needs to be served over HTTP (not opened as a `file://` URL, which most
 browsers block for fetch). From the repo root:
 
 ```bash
-cd web && python3 -m http.server 8000
+cd docs && python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000`.
