@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>India Public Digital Infrastructure — Capability Ontology</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e37;
+    --text: #e6e8eb;
+    --muted: #9aa0ab;
+    --accent: #7dd3fc;
+    --active: #4ade80;
+    --deprecating: #fbbf24;
+    --legacy: #f97316;
+    --draft: #a78bfa;
+    --mixed: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    padding: 28px 32px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    max-width: 780px;
+  }
+  #status {
+    padding: 10px 32px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  main {
+    padding: 8px 32px 48px;
+  }
+  .domain-group {
+    margin-top: 28px;
+  }
+  .domain-group h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 0.87rem;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  tr:last-child td { border-bottom: none; }
+  .provider {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .capability { max-width: 420px; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge.active_maintained { background: rgba(74,222,128,0.15); color: var(--active); }
+  .badge.active_but_deprecating { background: rgba(251,191,36,0.15); color: var(--deprecating); }
+  .badge.legacy_unmaintained_but_usable { background: rgba(249,115,22,0.15); color: var(--legacy); }
+  .badge.draft_or_early_stage { background: rgba(167,139,250,0.15); color: var(--draft); }
+  .badge.mixed_or_unverified { background: rgba(148,163,184,0.15); color: var(--mixed); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .notes { color: var(--muted); font-size: 0.82rem; margin-top: 3px; }
+  .verb { color: var(--muted); font-style: italic; }
+  footer {
+    padding: 24px 32px 48px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>India Public Digital Infrastructure — Capability Ontology</h1>
+  <p>A dictionary of public-good tech (government, private-sector, foundation, and international) mapped to real-world capabilities in plain language, not implementation detail. Read-only view, rendered client-side from <code>dictionary.sqlite</code> via sql.js.</p>
+</header>
+
+<div id="status">Loading dictionary.sqlite…</div>
+<main id="main"></main>
+
+<footer>
+  Data model: <code>providers</code> → <code>capabilities</code>. See <code>schema.sql</code> for the full schema and <code>README.md</code> for the consumption model for downstream apps.
+</footer>
+
+<script>
+const DOMAIN_LABELS = {
+  identity: "Identity",
+  payments_finance: "Payments & Finance",
+  commerce_logistics: "Commerce & Logistics",
+  mobility_transport: "Mobility & Transport",
+  urban_environment: "Urban & Environment",
+  geospatial_earth_observation: "Geospatial & Earth Observation",
+  health: "Health",
+  education_pedagogy: "Education & Pedagogy",
+  social_protection_welfare: "Social Protection & Welfare",
+  civic_governance_process: "Civic Governance & Process",
+  language_translation: "Language & Translation",
+  agriculture: "Agriculture",
+  disaster_humanitarian: "Disaster & Humanitarian",
+  justice_legal: "Justice & Legal",
+  data_infrastructure_generic: "Data Infrastructure (Generic)",
+  procurement: "Procurement"
+};
+
+const STATUS_LABELS = {
+  active_maintained: "Active",
+  active_but_deprecating: "Active — deprecating",
+  legacy_unmaintained_but_usable: "Legacy — unmaintained, usable",
+  draft_or_early_stage: "Draft / early stage",
+  mixed_or_unverified: "Mixed / unverified"
+};
+
+async function main() {
+  const statusEl = document.getElementById('status');
+  const mainEl = document.getElementById('main');
+
+  try {
+    const SQL = await initSqlJs({
+      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+    });
+
+    const response = await fetch('dictionary.sqlite');
+    if (!response.ok) throw new Error(`Could not fetch dictionary.sqlite (${response.status})`);
+    const buf = await response.arrayBuffer();
+    const db = new SQL.Database(new Uint8Array(buf));
+
+    const query = `
+      SELECT
+        c.domain_bucket, c.layer, c.name, c.real_world_capability, c.verb,
+        c.access_pattern, c.endpoint_or_repo, c.maturity_status, c.notes,
+        p.name AS provider_name, p.homepage_url, p.org_type, p.country_scope
+      FROM capabilities c
+      JOIN providers p ON p.id = c.provider_id
+      ORDER BY c.domain_bucket, p.name, c.name;
+    `;
+    const result = db.exec(query);
+
+    if (result.length === 0) {
+      statusEl.textContent = 'No data found.';
+      return;
+    }
+
+    const columns = result[0].columns;
+    const rows = result[0].values.map(r => Object.fromEntries(columns.map((c, i) => [c, r[i]])));
+
+    const counts = db.exec("SELECT (SELECT COUNT(*) FROM providers), (SELECT COUNT(*) FROM capabilities)")[0].values[0];
+    statusEl.textContent = `${counts[0]} providers · ${counts[1]} capabilities`;
+
+    const grouped = {};
+    for (const row of rows) {
+      const key = row.domain_bucket;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(row);
+    }
+
+    const sortedDomains = Object.keys(grouped).sort();
+
+    for (const domain of sortedDomains) {
+      const section = document.createElement('div');
+      section.className = 'domain-group';
+
+      const h2 = document.createElement('h2');
+      h2.textContent = `${DOMAIN_LABELS[domain] || domain} (${grouped[domain].length})`;
+      section.appendChild(h2);
+
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Capability</th>
+            <th>Layer</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+      `;
+      const tbody = document.createElement('tbody');
+
+      for (const row of grouped[domain]) {
+        const tr = document.createElement('tr');
+
+        const providerCell = document.createElement('td');
+        providerCell.className = 'provider';
+        if (row.homepage_url) {
+          const a = document.createElement('a');
+          a.href = row.homepage_url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = row.provider_name;
+          providerCell.appendChild(a);
+        } else {
+          providerCell.textContent = row.provider_name;
+        }
+
+        const capCell = document.createElement('td');
+        capCell.className = 'capability';
+        const nameLine = document.createElement('div');
+        nameLine.innerHTML = `<strong>${escapeHtml(row.name)}</strong>` + (row.verb ? ` <span class="verb">— ${escapeHtml(row.verb)}</span>` : '');
+        capCell.appendChild(nameLine);
+        const descLine = document.createElement('div');
+        descLine.textContent = row.real_world_capability;
+        capCell.appendChild(descLine);
+        if (row.notes) {
+          const notesLine = document.createElement('div');
+          notesLine.className = 'notes';
+          notesLine.textContent = row.notes;
+          capCell.appendChild(notesLine);
+        }
+        if (row.endpoint_or_repo) {
+          const linkLine = document.createElement('div');
+          linkLine.className = 'notes';
+          const a = document.createElement('a');
+          a.href = row.endpoint_or_repo;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = row.endpoint_or_repo;
+          linkLine.appendChild(a);
+          capCell.appendChild(linkLine);
+        }
+
+        const layerCell = document.createElement('td');
+        layerCell.textContent = row.layer.replace(/_/g, ' ');
+
+        const statusCell = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.className = `badge ${row.maturity_status}`;
+        badge.textContent = STATUS_LABELS[row.maturity_status] || row.maturity_status;
+        statusCell.appendChild(badge);
+
+        tr.appendChild(providerCell);
+        tr.appendChild(capCell);
+        tr.appendChild(layerCell);
+        tr.appendChild(statusCell);
+        tbody.appendChild(tr);
+      }
+
+      table.appendChild(tbody);
+      section.appendChild(table);
+      mainEl.appendChild(section);
+    }
+
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+    console.error(err);
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+main();
+</script>
+
+</body>
+</html>
