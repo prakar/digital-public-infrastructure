@@ -113,7 +113,7 @@ fork it, branch it, or add app code here.
 - **Branch** implies temporary divergence meant to merge back. Also wrong —
   an app isn't going to merge back into the dictionary.
 - **Correct model: composition.** Tag releases here (e.g. `v1.0.0`,
-  `v1.1.0`) whenever `seed.sql`/`schema.sql` change meaningfully. A new app
+  `v1.1.0`) whenever `data/*.csv`/`schema.sql` change meaningfully. A new app
   repo either:
   - fetches the released `dictionary.sqlite` (or a future `dictionary.json`
     export) by URL at build time and treats it as read-only reference data,
